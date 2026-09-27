@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媽咪生日抽獎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#FFF5F7;
+    --pink-soft:#FFD6E0;
+    --coral:#FF8FA3;
+    --coral-deep:#FF6B89;
+    --white:#FFFFFF;
+    --ink:#4A3B3F;
+    --ink-soft:#8A7278;
+    --gold:#FFC857;
+    --gold-deep:#F2A93C;
+    --shadow: 0 12px 32px rgba(255, 143, 163, 0.22);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 8%, #FFE3EA 0%, transparent 45%),
+      radial-gradient(circle at 85% 92%, #FFE3EA 0%, transparent 45%),
+      var(--blush);
+    font-family:'Noto Sans TC','Baloo 2',sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:28px 16px 60px;
+  }
+  .app{ width:100%; max-width:460px; }
+
+  .header{ text-align:center; margin-bottom:22px; }
+  .header .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    color:var(--coral-deep);
+    font-weight:700;
+    display:block;
+    margin-bottom:6px;
+  }
+  .header h1{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:800;
+    font-size:30px;
+    margin:0;
+    color:var(--ink);
+  }
+  .header h1 span{ color:var(--coral); }
+  .header p{
+    margin:8px 0 0;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+
+  /* Mode cards */
+  .modes{ display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+  .mode-card{
+    background:var(--white);
+    border:2.5px solid transparent;
+    border-radius:20px;
+    padding:16px 18px;
+    transition:border-color .15s ease, box-shadow .15s ease;
+    box-shadow:0 4px 14px rgba(255,143,163,0.10);
+    position:relative;
+    overflow:hidden;
+  }
+  .mode-card.expanded{
+    border-color:var(--coral);
+    box-shadow:var(--shadow);
+  }
+  .mode-toggle{ cursor:pointer; }
+  .mode-toggle:active{ opacity:0.85; }
+  .mode-card .row1{ display:flex; justify-content:space-between; align-items:center; }
+  .mode-card .name{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:17px; }
+  .mode-card .bet{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:15px;
+    color:var(--coral-deep);
+    background:var(--pink-soft);
+    padding:3px 10px;
+    border-radius:999px;
+  }
+  .mode-card .desc{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
+  .mode-card .jackpot-tag{
+    display:inline-block;
+    margin-top:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    color:var(--gold-deep);
+    background:#FFF3D9;
+    padding:2px 9px;
+    border-radius:999px;
+  }
+  .odds-table{
+    margin-top:0;
+    border-top:none;
+    padding-top:0;
+    max-height:0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    transition:max-height .35s ease, margin-top .35s ease, padding-top .35s ease;
+  }
+  .mode-card.expanded .odds-table{
+    margin-top:12px;
+    border-top:1px dashed var(--pink-soft);
+    padding-top:10px;
+    max-height:300px;
+  }
+  .odds-table-inner{ display:flex; flex-direction:column; gap:5px; }
+  .mode-card-actions{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+  }
+  .mode-card-actions button{
+    flex:1;
+    border:none;
+    border-radius:999px;
+    padding:10px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .btn-continue{
+    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    color:#fff;
+  }
+  .btn-continue:active{ transform:scale(0.97); }
+  .btn-collapse{
+    background:#fff;
+    border:2px solid var(--pink-soft) !important;
+    color:var(--ink-soft);
+    padding:8px !important;
+  }
+  .btn-collapse:active{ transform:scale(0.97); }
+  .odds-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+  }
+  .odds-row .tier-label{
+    color:var(--ink);
+    font-weight:700;
+    flex:0 0 auto;
+  }
+  .odds-row .tier-label.head{ color:var(--gold-deep); }
+  .odds-row .prob-value{
+    color:var(--coral-deep);
+    font-weight:700;
+  }
+  .odds-row .refund-value{
+    color:#4CAF7D;
+    font-weight:600;
+    font-size:11.5px;
+  }
+  .odds-row .refund-value.none{ color:var(--ink-soft); }
+
+  .draw-btn{
+    width:100%;
+    border:none;
+    border-radius:999px;
+    padding:16px;
+    font-family:'Baloo 2',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    box-shadow:0 8px 20px rgba(255,107,137,0.35);
+    cursor:pointer;
+    transition:transform .12s ease, opacity .2s ease;
+    letter-spacing:0.02em;
+  }
+  .draw-btn:disabled{ opacity:0.4; cursor:not-allowed; box-shadow:none; }
+  .draw-btn:not(:disabled):active{ transform:scale(0.97); }
+
+  /* Draw stage */
+  .stage{
+    display:none;
+    text-align:center;
+    margin:26px 0 18px;
+  }
+  .stage.active{ display:block; }
+  .wheel{
+    width:140px;height:140px;
+    margin:0 auto 18px;
+    border-radius:50%;
+    background:conic-gradient(from 0deg, var(--pink-soft), var(--coral), var(--gold), var(--pink-soft));
+    display:flex;align-items:center;justify-content:center;
+    font-size:44px;
+    animation:spin 0.9s cubic-bezier(.2,.9,.3,1) forwards;
+    box-shadow:0 10px 30px rgba(255,143,163,0.4);
+  }
+  @keyframes spin{
+    0%{ transform:rotate(0deg) scale(0.9); }
+    70%{ transform:rotate(1080deg) scale(1.06); }
+    100%{ transform:rotate(1260deg) scale(1); }
+  }
+  .stage .drawing-text{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    color:var(--coral-deep);
+    font-size:15px;
+  }
+
+  /* Result */
+  .result{ display:none; }
+  .result.active{ display:block; animation:pop .45s cubic-bezier(.2,.9,.3,1); }
+  @keyframes pop{ 0%{ transform:scale(0.85); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
+
+  .prize-card{
+    background:linear-gradient(160deg, #fff, #FFF0F3);
+    border-radius:24px;
+    padding:26px 22px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    border:2px solid var(--pink-soft);
+    margin-bottom:16px;
+  }
+  .prize-card.jackpot{
+    background:linear-gradient(160deg, #FFF9EA, #FFEFC7);
+    border-color:var(--gold);
+  }
+  .prize-card .emoji{ font-size:52px; display:block; margin-bottom:8px; }
+  .prize-card .tier{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.1em;
+    color:var(--coral-deep);
+  }
+  .prize-card.jackpot .tier{ color:var(--gold-deep); }
+  .prize-card .prize-name{
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    font-weight:800;
+    margin:6px 0 4px;
+  }
+  .prize-card .prize-value{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  /* Receipt */
+  .receipt{
+    background:#fff;
+    border-radius:16px;
+    padding:20px 22px 22px;
+    box-shadow:0 6px 20px rgba(74,59,63,0.08);
+    position:relative;
+    margin-bottom:16px;
+  }
+  .receipt::before, .receipt::after{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    height:10px;
+    background:
+      radial-gradient(circle, var(--blush) 6px, transparent 7px) 0 0 / 16px 16px repeat-x;
+  }
+  .receipt::before{ top:-5px; }
+  .receipt::after{ bottom:-5px; transform:rotate(180deg); }
+  .receipt h3{
+    font-family:'Baloo 2',sans-serif;
+    font-size:14px;
+    text-align:center;
+    margin:0 0 14px;
+    color:var(--ink-soft);
+    letter-spacing:0.05em;
+  }
+  .receipt-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;
+    padding:7px 0;
+    border-bottom:1px dashed #F0DDE2;
+  }
+  .receipt-row .label{ color:var(--ink-soft); }
+  .receipt-row .value{ font-weight:700; }
+  .receipt-row.refund .value{ color:#4CAF7D; }
+  .receipt-row.net{
+    border-bottom:none;
+    margin-top:8px;
+    padding-top:12px;
+    border-top:2px solid var(--ink);
+    font-size:15px;
+  }
+  .receipt-row.net .label{ color:var(--ink); font-weight:700; }
+  .receipt-row.net .value{ color:var(--coral-deep); font-size:17px; }
+
+  .action-row{ display:flex; gap:10px; }
+  .btn-secondary{
+    flex:1;
+    border:2px solid var(--pink-soft);
+    background:#fff;
+    color:var(--ink);
+    border-radius:999px;
+    padding:13px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-secondary:active{ transform:scale(0.97); }
+  .btn-primary-small{
+    flex:1;
+    border:none;
+    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    color:#fff;
+    border-radius:999px;
+    padding:13px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-primary-small:active{ transform:scale(0.97); }
+
+  .note{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:18px;
+    line-height:1.6;
+  }
+  .confetti{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; overflow:hidden; z-index:50;
+  }
+  .confetti span{
+    position:absolute; top:-20px;
+    font-size:20px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(360deg); opacity:0.9; }
+  }
+
+  /* Test mode */
+  .test-toggle{
+    position:fixed;
+    top:14px;
+    right:14px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid var(--pink-soft);
+    color:var(--ink-soft);
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(255,143,163,0.18);
+    z-index:60;
+  }
+  .test-toggle:active{ transform:scale(0.92); }
+
+  .test-overlay{
+    display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(74,59,63,0.45);
+    z-index:70;
+    padding:20px 14px;
+    overflow-y:auto;
+  }
+  .test-overlay.active{ display:block; }
+  .test-panel{
+    background:#fff;
+    border-radius:20px;
+    max-width:460px;
+    margin:20px auto;
+    padding:20px;
+  }
+  .test-panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .test-panel-header h2{
+    font-family:'Baloo 2',sans-serif;
+    font-size:17px;
+    margin:0;
+  }
+  .test-close{
+    background:var(--pink-soft);
+    border:none;
+    border-radius:50%;
+    width:28px;height:28px;
+    font-size:14px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .test-mode-block{
+    border:1.5px solid #F5DCE2;
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  .test-mode-block h3{
+    font-family:'Baloo 2',sans-serif;
+    font-size:14.5px;
+    margin:0 0 8px;
+  }
+  .test-run-row{ display:flex; gap:8px; margin-bottom:10px; }
+  .test-run-row button{
+    flex:1;
+    border:none;
+    border-radius:999px;
+    padding:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:12px;
+    background:var(--pink-soft);
+    color:var(--coral-deep);
+    cursor:pointer;
+  }
+  .test-run-row button:active{ transform:scale(0.96); }
+  .test-results{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+  }
+  .test-result-row{
+    display:flex;
+    justify-content:space-between;
+    padding:3px 0;
+  }
+  .test-result-row .expect{ color:var(--ink-soft); }
+  .test-result-row .actual{ font-weight:700; color:var(--coral-deep); }
+  .test-empty{
+    color:var(--ink-soft);
+    font-size:12px;
+    font-style:italic;
+  }
+</style>
+</head>
+<body>
+<div class="test-toggle" id="testToggle" title="測試模式">🧪</div>
+
+<div class="test-overlay" id="testOverlay">
+  <div class="test-panel">
+    <div class="test-panel-header">
+      <h2>🧪 機率驗證測試模式</h2>
+      <button class="test-close" id="testClose">✕</button>
+    </div>
+    <div id="testModeBlocks"></div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="header">
+    <span class="eyebrow">🎂 HAPPY BIRTHDAY MOM 🎂</span>
+    <h1>媽咪的<span>生日抽獎</span></h1>
+    <p>選一個模式，押注越大，頭獎機率越高！<br>不管抽到什麼，不喜歡都可以選擇不領獎、全額退押金 💗</p>
+  </div>
+
+  <!-- MODE SELECTION -->
+  <div id="modeSection">
+    <div class="modes" id="modeList"></div>
+  </div>
+
+  <!-- DRAWING ANIMATION -->
+  <div class="stage" id="stage">
+    <div class="wheel">🎀</div>
+    <div class="drawing-text">抽獎中...</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="resultSection">
+    <div class="prize-card" id="prizeCard">
+      <span class="emoji" id="prizeEmoji">🎁</span>
+      <div class="tier" id="prizeTier">頭獎</div>
+      <div class="prize-name" id="prizeName">獎項名稱</div>
+      <div class="prize-value" id="prizeValue">價值說明</div>
+    </div>
+
+    <div class="receipt">
+      <h3>🧾 押注計算收據 🧾</h3>
+      <div class="receipt-row">
+        <span class="label">遊玩模式</span>
+        <span class="value" id="rMode">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">押注金額</span>
+        <span class="value" id="rBet">$0</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">抽中獎項</span>
+        <span class="value" id="rPrize">—</span>
+      </div>
+      <div class="receipt-row refund">
+        <span class="label">退款金額</span>
+        <span class="value" id="rRefund">$0</span>
+      </div>
+      <div class="receipt-row net">
+        <span class="label">媽咪實付</span>
+        <span class="value" id="rNet">$0</span>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-secondary" id="declineBtn">不領獎，全額退押金</button>
+      <button class="btn-primary-small" id="homeBtn">回到首頁</button>
+    </div>
+  </div>
+
+  <p class="note">獎項機率經過設計，押注越多頭獎機率越高；六獎僅出現在不押注模式。<br>All In 模式隱藏驚喜彩蛋，試試手氣 ✨<br>本頁僅供家庭生日活動使用 🌸</p>
+</div>
+
+<script>
+const MODES = {
+  normal: {
+    name: "🌷 普通人模式",
+    bet: 0,
+    desc: "六個獎項都有機會，輕鬆試手氣。",
+    prizes: [
+      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.10, refund:0 },
+      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.18, refund:0 },
+      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.18, refund:0 },
+      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.18, refund:0 },
+      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.18, refund:0 },
+      { key:"p6",   name:"六獎：寶雅購物金", emoji:"🛍️", value:"$1,000", prob:0.18, refund:0 },
+    ]
+  },
+  gentle: {
+    name: "🌸 小賭怡情模式",
+    bet: 1000,
+    desc: "六獎淘汰，中獎穩穩有退款。",
+    prizes: [
+      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.13, refund:0 },
+      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.2175, refund:0 },
+      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.2175, refund:600 },
+      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.2175, refund:900 },
+      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.2175, refund:900 },
+    ]
+  },
+  gambler: {
+    name: "🎲 賭徒模式",
+    bet: 1500,
+    desc: "頭獎機率更高，五獎比重開始降低。",
+    prizes: [
+      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.17, refund:0 },
+      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.24, refund:0 },
+      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.24, refund:1200 },
+      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.24, refund:1400 },
+      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.11, refund:1400 },
+    ]
+  },
+  allin: {
+    name: "👑 豪賭 All In 模式",
+    bet: 2000,
+    desc: "頭獎機率最高，還有隱藏驚喜獎項等你揭曉！",
+    prizes: [
+      { key:"special", name:"特別獎：台北⇄越南全額旅費補貼", emoji:"🌏", value:"約 $25,000", prob:0.08, refund:0 },
+      { key:"head", name:"頭獎：台北⇄上海來回機票全額補貼", emoji:"✈️", value:"約 $15,000", prob:0.22, refund:0 },
+      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.22, refund:600 },
+      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.22, refund:1800 },
+      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.22, refund:2000 },
+      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.04, refund:2000 },
+    ]
+  }
+};
+
+let selectedMode = null;
+let currentResult = null;
+
+const modeList = document.getElementById('modeList');
+Object.entries(MODES).forEach(([key, m]) => {
+  const card = document.createElement('div');
+  card.className = 'mode-card';
+  card.dataset.key = key;
+
+  const oddsRows = m.prizes.map(p => {
+    const isSpecial = p.key === 'special';
+    const tierLabel = isSpecial ? '🎁 ？？？' : p.name.split('：')[0];
+    const isBigWin = p.key === 'head' || isSpecial;
+    const refundText = isSpecial ? '？' : (p.refund > 0 ? `退 $${p.refund}` : '不退');
+    return `
+      <div class="odds-row">
+        <span class="tier-label${isBigWin ? ' head' : ''}">${tierLabel}</span>
+        <span class="prob-value">${(p.prob*100).toFixed(p.prob*100 % 1 === 0 ? 0 : 1)}%</span>
+        <span class="refund-value${p.refund > 0 || isSpecial ? '' : ' none'}">${refundText}</span>
+      </div>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="row1 mode-toggle">
+      <span class="name">${m.name}</span>
+      <span class="bet">${m.bet === 0 ? '免押注' : '押 $' + m.bet}</span>
+    </div>
+    <div class="desc">${m.desc}</div>
+    <div class="odds-table">
+      <div class="odds-table-inner">${oddsRows}</div>
+      <div class="mode-card-actions">
+        <button class="btn-collapse" data-action="collapse">收回</button>
+        <button class="btn-continue" data-action="continue">用這個模式抽獎 🎁</button>
+      </div>
+    </div>
+  `;
+
+  const toggleRow = card.querySelector('.mode-toggle');
+  toggleRow.addEventListener('click', () => {
+    const alreadyExpanded = card.classList.contains('expanded');
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('expanded'));
+    if (!alreadyExpanded) card.classList.add('expanded');
+  });
+
+  card.querySelector('[data-action="collapse"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    card.classList.remove('expanded');
+  });
+
+  card.querySelector('[data-action="continue"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedMode = key;
+    runDraw();
+  });
+
+  modeList.appendChild(card);
+});
+
+function weightedPick(prizes) {
+  const r = Math.random();
+  let acc = 0;
+  for (const p of prizes) {
+    acc += p.prob;
+    if (r <= acc) return p;
+  }
+  return prizes[prizes.length - 1];
+}
+
+function launchConfetti() {
+  const layer = document.createElement('div');
+  layer.className = 'confetti';
+  const emojis = ['🎉','🌸','✨','🎀','💗'];
+  for (let i=0;i<24;i++){
+    const s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.animationDuration = (2 + Math.random()*1.5) + 's';
+    s.style.animationDelay = (Math.random()*0.3) + 's';
+    layer.appendChild(s);
+  }
+  document.body.appendChild(layer);
+  setTimeout(()=>layer.remove(), 3800);
+}
+
+function runDraw() {
+  const mode = MODES[selectedMode];
+  document.getElementById('modeSection').style.display = 'none';
+  const stage = document.getElementById('stage');
+  stage.classList.add('active');
+
+  setTimeout(() => {
+    const prize = weightedPick(mode.prizes);
+    currentResult = { mode, prize };
+    stage.classList.remove('active');
+    showResult(mode, prize);
+  }, 950);
+}
+
+function showResult(mode, prize) {
+  const card = document.getElementById('prizeCard');
+  const isSpecial = prize.key === 'special';
+  const isJackpot = prize.key === 'head';
+  const isBigWin = isSpecial || isJackpot;
+  card.classList.toggle('jackpot', isBigWin);
+  document.getElementById('prizeEmoji').textContent = prize.emoji;
+  document.getElementById('prizeTier').textContent = isSpecial ? '🏆 特別獎 🏆' : isJackpot ? '🎊 頭獎 🎊' : prize.name.split('：')[0];
+  document.getElementById('prizeName').textContent = prize.name.split('：')[1] || prize.name;
+  document.getElementById('prizeValue').textContent = '價值 ' + prize.value;
+
+  document.getElementById('rMode').textContent = mode.name;
+  document.getElementById('rBet').textContent = '$' + mode.bet;
+  document.getElementById('rPrize').textContent = prize.name.split('：')[0];
+  document.getElementById('rRefund').textContent = '$' + prize.refund;
+  const net = mode.bet - prize.refund;
+  document.getElementById('rNet').textContent = '$' + net;
+
+  document.getElementById('resultSection').classList.add('active');
+  if (isBigWin) launchConfetti();
+}
+
+document.getElementById('declineBtn').addEventListener('click', () => {
+  document.getElementById('rRefund').textContent = '$' + currentResult.mode.bet + '（全額退還）';
+  document.getElementById('rNet').textContent = '$0';
+  document.getElementById('rPrize').textContent = '不領獎';
+});
+
+document.getElementById('homeBtn').addEventListener('click', () => {
+  document.getElementById('resultSection').classList.remove('active');
+  document.getElementById('modeSection').style.display = 'block';
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('expanded'));
+  selectedMode = null;
+  currentResult = null;
+});
+
+/* ---------- Test mode (probability verification) ---------- */
+const testBlocksEl = document.getElementById('testModeBlocks');
+
+Object.entries(MODES).forEach(([key, m]) => {
+  const block = document.createElement('div');
+  block.className = 'test-mode-block';
+
+  const expectRows = m.prizes.map(p => {
+    const tierLabel = p.key === 'special' ? '🎁 ？？？' : p.name.split('：')[0];
+    return `<div class="test-result-row" data-tier="${p.key}">
+      <span class="expect">${tierLabel}（期望 ${(p.prob*100).toFixed(p.prob*100 % 1 === 0 ? 0 : 1)}%）</span>
+      <span class="actual" data-actual="${p.key}">—</span>
+    </div>`;
+  }).join('');
+
+  block.innerHTML = `
+    <h3>${m.name}</h3>
+    <div class="test-run-row">
+      <button data-key="${key}" data-runs="1000">跑 1,000 次</button>
+      <button data-key="${key}" data-runs="10000">跑 10,000 次</button>
+    </div>
+    <div class="test-results">${expectRows}</div>
+  `;
+  testBlocksEl.appendChild(block);
+});
+
+testBlocksEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-runs]');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  const runs = parseInt(btn.dataset.runs, 10);
+  const mode = MODES[key];
+
+  const counts = {};
+  mode.prizes.forEach(p => counts[p.key] = 0);
+  for (let i = 0; i < runs; i++) {
+    const prize = weightedPick(mode.prizes);
+    counts[prize.key]++;
+  }
+
+  const block = btn.closest('.test-mode-block');
+  mode.prizes.forEach(p => {
+    const pct = (counts[p.key] / runs * 100).toFixed(2);
+    const el = block.querySelector(`[data-actual="${p.key}"]`);
+    el.textContent = `實測 ${pct}%（${counts[p.key]}次）`;
+  });
+});
+
+document.getElementById('testToggle').addEventListener('click', () => {
+  document.getElementById('testOverlay').classList.add('active');
+});
+document.getElementById('testClose').addEventListener('click', () => {
+  document.getElementById('testOverlay').classList.remove('active');
+});
+</script>
+</body>
+</html>
