@@ -2,36 +2,39 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>媽咪生日抽獎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blush:#FFF5F7;
-    --pink-soft:#FFD6E0;
-    --coral:#FF8FA3;
-    --coral-deep:#FF6B89;
+    --cloud:#CDDDDD;
+    --petal:#FECBCB;
+    --rose:#EDD8DC;
+    --blush:#F1B3B8;
+    --velvet:#F49399;
     --white:#FFFFFF;
     --ink:#4A3B3F;
     --ink-soft:#8A7278;
     --gold:#FFC857;
     --gold-deep:#F2A93C;
-    --shadow: 0 12px 32px rgba(255, 143, 163, 0.22);
+    --bg:#FFF7F8;
+    --shadow: 0 12px 32px rgba(241,179,184,0.22);
   }
   *{ box-sizing:border-box; }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
   body{
     margin:0;
     min-height:100vh;
     background:
-      radial-gradient(circle at 15% 8%, #FFE3EA 0%, transparent 45%),
-      radial-gradient(circle at 85% 92%, #FFE3EA 0%, transparent 45%),
-      var(--blush);
+      radial-gradient(circle at 15% 8%, var(--petal) 0%, transparent 45%),
+      radial-gradient(circle at 85% 92%, var(--rose) 0%, transparent 45%),
+      var(--bg);
     font-family:'Noto Sans TC','Baloo 2',sans-serif;
     color:var(--ink);
     display:flex;
     justify-content:center;
-    padding:28px 16px 60px;
+    padding: calc(28px + env(safe-area-inset-top, 0px)) 16px calc(60px + env(safe-area-inset-bottom, 0px));
   }
   .app{ width:100%; max-width:460px; }
 
@@ -40,7 +43,7 @@
     font-family:'JetBrains Mono',monospace;
     font-size:12px;
     letter-spacing:0.12em;
-    color:var(--coral-deep);
+    color:var(--velvet);
     font-weight:700;
     display:block;
     margin-bottom:6px;
@@ -52,7 +55,7 @@
     margin:0;
     color:var(--ink);
   }
-  .header h1 span{ color:var(--coral); }
+  .header h1 span{ color:var(--velvet); }
   .header p{
     margin:8px 0 0;
     font-size:13.5px;
@@ -60,7 +63,6 @@
     line-height:1.6;
   }
 
-  /* Mode cards */
   .modes{ display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
   .mode-card{
     background:var(--white);
@@ -68,12 +70,12 @@
     border-radius:20px;
     padding:16px 18px;
     transition:border-color .15s ease, box-shadow .15s ease;
-    box-shadow:0 4px 14px rgba(255,143,163,0.10);
+    box-shadow:0 4px 14px rgba(241,179,184,0.10);
     position:relative;
     overflow:hidden;
   }
   .mode-card.expanded{
-    border-color:var(--coral);
+    border-color:var(--blush);
     box-shadow:var(--shadow);
   }
   .mode-toggle{ cursor:pointer; }
@@ -84,8 +86,8 @@
     font-family:'JetBrains Mono',monospace;
     font-weight:700;
     font-size:15px;
-    color:var(--coral-deep);
-    background:var(--pink-soft);
+    color:var(--velvet);
+    background:var(--petal);
     padding:3px 10px;
     border-radius:999px;
   }
@@ -114,7 +116,7 @@
   }
   .mode-card.expanded .odds-table{
     margin-top:12px;
-    border-top:1px dashed var(--pink-soft);
+    border-top:1px dashed var(--rose);
     padding-top:10px;
     max-height:300px;
   }
@@ -135,13 +137,13 @@
     cursor:pointer;
   }
   .btn-continue{
-    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    background:linear-gradient(135deg, var(--blush), var(--velvet));
     color:#fff;
   }
   .btn-continue:active{ transform:scale(0.97); }
   .btn-collapse{
     background:#fff;
-    border:2px solid var(--pink-soft) !important;
+    border:2px solid var(--rose) !important;
     color:var(--ink-soft);
     padding:8px !important;
   }
@@ -160,7 +162,7 @@
   }
   .odds-row .tier-label.head{ color:var(--gold-deep); }
   .odds-row .prob-value{
-    color:var(--coral-deep);
+    color:var(--velvet);
     font-weight:700;
   }
   .odds-row .refund-value{
@@ -179,8 +181,8 @@
     font-size:18px;
     font-weight:700;
     color:#fff;
-    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
-    box-shadow:0 8px 20px rgba(255,107,137,0.35);
+    background:linear-gradient(135deg, var(--blush), var(--velvet));
+    box-shadow:0 8px 20px rgba(244,147,153,0.35);
     cursor:pointer;
     transition:transform .12s ease, opacity .2s ease;
     letter-spacing:0.02em;
@@ -188,7 +190,6 @@
   .draw-btn:disabled{ opacity:0.4; cursor:not-allowed; box-shadow:none; }
   .draw-btn:not(:disabled):active{ transform:scale(0.97); }
 
-  /* Draw stage */
   .stage{
     display:none;
     text-align:center;
@@ -199,11 +200,11 @@
     width:140px;height:140px;
     margin:0 auto 18px;
     border-radius:50%;
-    background:conic-gradient(from 0deg, var(--pink-soft), var(--coral), var(--gold), var(--pink-soft));
+    background:conic-gradient(from 0deg, var(--petal), var(--blush), var(--gold), var(--cloud), var(--petal));
     display:flex;align-items:center;justify-content:center;
     font-size:44px;
     animation:spin 0.9s cubic-bezier(.2,.9,.3,1) forwards;
-    box-shadow:0 10px 30px rgba(255,143,163,0.4);
+    box-shadow:0 10px 30px rgba(241,179,184,0.4);
   }
   @keyframes spin{
     0%{ transform:rotate(0deg) scale(0.9); }
@@ -213,22 +214,21 @@
   .stage .drawing-text{
     font-family:'Baloo 2',sans-serif;
     font-weight:700;
-    color:var(--coral-deep);
+    color:var(--velvet);
     font-size:15px;
   }
 
-  /* Result */
   .result{ display:none; }
   .result.active{ display:block; animation:pop .45s cubic-bezier(.2,.9,.3,1); }
   @keyframes pop{ 0%{ transform:scale(0.85); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
 
   .prize-card{
-    background:linear-gradient(160deg, #fff, #FFF0F3);
+    background:linear-gradient(160deg, #fff, var(--petal));
     border-radius:24px;
     padding:26px 22px;
     text-align:center;
     box-shadow:var(--shadow);
-    border:2px solid var(--pink-soft);
+    border:2px solid var(--rose);
     margin-bottom:16px;
   }
   .prize-card.jackpot{
@@ -241,7 +241,7 @@
     font-size:12px;
     font-weight:700;
     letter-spacing:0.1em;
-    color:var(--coral-deep);
+    color:var(--velvet);
   }
   .prize-card.jackpot .tier{ color:var(--gold-deep); }
   .prize-card .prize-name{
@@ -255,7 +255,6 @@
     color:var(--ink-soft);
   }
 
-  /* Receipt */
   .receipt{
     background:#fff;
     border-radius:16px;
@@ -270,7 +269,7 @@
     left:0; right:0;
     height:10px;
     background:
-      radial-gradient(circle, var(--blush) 6px, transparent 7px) 0 0 / 16px 16px repeat-x;
+      radial-gradient(circle, var(--bg) 6px, transparent 7px) 0 0 / 16px 16px repeat-x;
   }
   .receipt::before{ top:-5px; }
   .receipt::after{ bottom:-5px; transform:rotate(180deg); }
@@ -289,7 +288,7 @@
     font-family:'JetBrains Mono',monospace;
     font-size:13.5px;
     padding:7px 0;
-    border-bottom:1px dashed #F0DDE2;
+    border-bottom:1px dashed var(--rose);
   }
   .receipt-row .label{ color:var(--ink-soft); }
   .receipt-row .value{ font-weight:700; }
@@ -302,12 +301,12 @@
     font-size:15px;
   }
   .receipt-row.net .label{ color:var(--ink); font-weight:700; }
-  .receipt-row.net .value{ color:var(--coral-deep); font-size:17px; }
+  .receipt-row.net .value{ color:var(--velvet); font-size:17px; }
 
   .action-row{ display:flex; gap:10px; }
   .btn-secondary{
     flex:1;
-    border:2px solid var(--pink-soft);
+    border:2px solid var(--rose);
     background:#fff;
     color:var(--ink);
     border-radius:999px;
@@ -321,7 +320,7 @@
   .btn-primary-small{
     flex:1;
     border:none;
-    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    background:linear-gradient(135deg, var(--blush), var(--velvet));
     color:#fff;
     border-radius:999px;
     padding:13px;
@@ -352,23 +351,22 @@
     to{ transform:translateY(110vh) rotate(360deg); opacity:0.9; }
   }
 
-  /* Test mode */
   .test-toggle{
     position:fixed;
-    top:14px;
+    top: calc(14px + env(safe-area-inset-top, 0px));
     right:14px;
     width:34px;
     height:34px;
     border-radius:50%;
     background:#fff;
-    border:2px solid var(--pink-soft);
+    border:2px solid var(--rose);
     color:var(--ink-soft);
     font-size:14px;
     display:flex;
     align-items:center;
     justify-content:center;
     cursor:pointer;
-    box-shadow:0 4px 12px rgba(255,143,163,0.18);
+    box-shadow:0 4px 12px rgba(241,179,184,0.18);
     z-index:60;
   }
   .test-toggle:active{ transform:scale(0.92); }
@@ -402,7 +400,7 @@
     margin:0;
   }
   .test-close{
-    background:var(--pink-soft);
+    background:var(--rose);
     border:none;
     border-radius:50%;
     width:28px;height:28px;
@@ -411,7 +409,7 @@
     color:var(--ink);
   }
   .test-mode-block{
-    border:1.5px solid #F5DCE2;
+    border:1.5px solid var(--rose);
     border-radius:14px;
     padding:12px 14px;
     margin-bottom:12px;
@@ -430,8 +428,8 @@
     font-family:'JetBrains Mono',monospace;
     font-weight:700;
     font-size:12px;
-    background:var(--pink-soft);
-    color:var(--coral-deep);
+    background:var(--petal);
+    color:var(--velvet);
     cursor:pointer;
   }
   .test-run-row button:active{ transform:scale(0.96); }
@@ -445,12 +443,7 @@
     padding:3px 0;
   }
   .test-result-row .expect{ color:var(--ink-soft); }
-  .test-result-row .actual{ font-weight:700; color:var(--coral-deep); }
-  .test-empty{
-    color:var(--ink-soft);
-    font-size:12px;
-    font-style:italic;
-  }
+  .test-result-row .actual{ font-weight:700; color:var(--velvet); }
 </style>
 </head>
 <body>
@@ -473,18 +466,15 @@
     <p>選一個模式，押注越大，頭獎機率越高！<br>不管抽到什麼，不喜歡都可以選擇不領獎、全額退押金 💗</p>
   </div>
 
-  <!-- MODE SELECTION -->
   <div id="modeSection">
     <div class="modes" id="modeList"></div>
   </div>
 
-  <!-- DRAWING ANIMATION -->
   <div class="stage" id="stage">
     <div class="wheel">🎀</div>
     <div class="drawing-text">抽獎中...</div>
   </div>
 
-  <!-- RESULT -->
   <div class="result" id="resultSection">
     <div class="prize-card" id="prizeCard">
       <span class="emoji" id="prizeEmoji">🎁</span>
@@ -533,10 +523,10 @@ const MODES = {
     bet: 0,
     desc: "六個獎項都有機會，輕鬆試手氣。",
     prizes: [
-      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.10, refund:0 },
-      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.18, refund:0 },
-      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.18, refund:0 },
-      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.18, refund:0 },
+      { key:"head", name:"頭獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $15,000", prob:0.10, refund:0 },
+      { key:"p2",   name:"二獎：萬元以下烘衣機", emoji:"🌀", value:"約 $10,000", prob:0.18, refund:0 },
+      { key:"p3",   name:"三獎：Medicube 美容儀 或 Refa 離子夾 或同價值美容相關產品", emoji:"💆", value:"約 $7,000", prob:0.18, refund:0 },
+      { key:"p4",   name:"四獎：越式洗髮高級方案一次", emoji:"💇", value:"約 $4,000", prob:0.18, refund:0 },
       { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.18, refund:0 },
       { key:"p6",   name:"六獎：寶雅購物金", emoji:"🛍️", value:"$1,000", prob:0.18, refund:0 },
     ]
@@ -546,10 +536,10 @@ const MODES = {
     bet: 1000,
     desc: "六獎淘汰，中獎穩穩有退款。",
     prizes: [
-      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.13, refund:0 },
-      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.2175, refund:0 },
-      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.2175, refund:600 },
-      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.2175, refund:900 },
+      { key:"head", name:"頭獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $15,000", prob:0.13, refund:0 },
+      { key:"p2",   name:"二獎：萬元以下烘衣機", emoji:"🌀", value:"約 $10,000", prob:0.2175, refund:0 },
+      { key:"p3",   name:"三獎：Medicube 美容儀 或 Refa 離子夾 或同價值美容相關產品", emoji:"💆", value:"約 $7,000", prob:0.2175, refund:600 },
+      { key:"p4",   name:"四獎：越式洗髮高級方案一次", emoji:"💇", value:"約 $4,000", prob:0.2175, refund:900 },
       { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.2175, refund:900 },
     ]
   },
@@ -558,10 +548,10 @@ const MODES = {
     bet: 1500,
     desc: "頭獎機率更高，五獎比重開始降低。",
     prizes: [
-      { key:"head", name:"頭獎：台北⇄上海來回機票 80% 補貼", emoji:"✈️", value:"約 $12,000", prob:0.17, refund:0 },
-      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.24, refund:0 },
-      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.24, refund:1200 },
-      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.24, refund:1400 },
+      { key:"head", name:"頭獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $15,000", prob:0.17, refund:0 },
+      { key:"p2",   name:"二獎：萬元以下烘衣機", emoji:"🌀", value:"約 $10,000", prob:0.24, refund:0 },
+      { key:"p3",   name:"三獎：Medicube 美容儀 或 Refa 離子夾 或同價值美容相關產品", emoji:"💆", value:"約 $7,000", prob:0.24, refund:1200 },
+      { key:"p4",   name:"四獎：越式洗髮高級方案一次", emoji:"💇", value:"約 $4,000", prob:0.24, refund:1400 },
       { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.11, refund:1400 },
     ]
   },
@@ -570,12 +560,12 @@ const MODES = {
     bet: 2000,
     desc: "頭獎機率最高，還有隱藏驚喜獎項等你揭曉！",
     prizes: [
-      { key:"special", name:"特別獎：台北⇄越南全額旅費補貼", emoji:"🌏", value:"約 $25,000", prob:0.08, refund:0 },
-      { key:"head", name:"頭獎：台北⇄上海來回機票全額補貼", emoji:"✈️", value:"約 $15,000", prob:0.22, refund:0 },
-      { key:"p2",   name:"二獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $7,000", prob:0.22, refund:600 },
-      { key:"p3",   name:"三獎：餐廳用餐（2000元/客）", emoji:"🍽️", value:"$2,000", prob:0.22, refund:1800 },
-      { key:"p4",   name:"四獎：餐廳用餐（1500元/客）", emoji:"🍱", value:"$1,500", prob:0.22, refund:2000 },
-      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.04, refund:2000 },
+      { key:"special", name:"特別獎：台北⇄越南全額旅費補貼", emoji:"🌏", value:"約 $25,000", prob:0.05, refund:0 },
+      { key:"head", name:"頭獎：全自動義式咖啡機 ×1", emoji:"☕", value:"約 $15,000", prob:0.22, refund:0 },
+      { key:"p2",   name:"二獎：萬元以下烘衣機", emoji:"🌀", value:"約 $10,000", prob:0.22, refund:600 },
+      { key:"p3",   name:"三獎：Medicube 美容儀 或 Refa 離子夾 或同價值美容相關產品", emoji:"💆", value:"約 $7,000", prob:0.22, refund:1800 },
+      { key:"p4",   name:"四獎：越式洗髮高級方案一次", emoji:"💇", value:"約 $4,000", prob:0.22, refund:2000 },
+      { key:"p5",   name:"五獎：皮克敏購物金 / App Store 點數卡", emoji:"🎮", value:"$1,500", prob:0.07, refund:2000 },
     ]
   }
 };
@@ -714,7 +704,7 @@ document.getElementById('homeBtn').addEventListener('click', () => {
   currentResult = null;
 });
 
-/* ---------- Test mode (probability verification) ---------- */
+/* ---------- Test mode ---------- */
 const testBlocksEl = document.getElementById('testModeBlocks');
 
 Object.entries(MODES).forEach(([key, m]) => {
